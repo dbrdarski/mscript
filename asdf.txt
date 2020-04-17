@@ -1,0 +1,3 @@
+var x;
+x = 5;
+document = x * 10;
