@@ -2,7 +2,4 @@ var x;
 x = 5;
 var y = {}
 y.x = x * 10;
-
-if (true) {}
-
-var a = y.z * 2
+var z = y.x
