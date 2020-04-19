@@ -12,14 +12,15 @@ module.exports = function(babel) {
     path.replaceWith(
       t.callExpression(
         t.identifier('M'),
-        [t.stringLiteral(operator), ...args.map(applyHandlers(path.node, handlers))]
+        [t.stringLiteral(operator), ...args.map(applyHandlers(path.node, handlers)).filter(x => x != null)]
       )
     );
   };
 
+  const blockToFunction = (node) => node != null && node.type === 'BlockStatement' ? t.functionExpression(null, [], node) : node;
   const mostCommonExpression = handler(['left', 'right']);
   const unary  = handler(['argument']);
-  const conditionalExpression = handler.bind(null, ['test', 'consequent', 'alternate']);
+  const conditionalExpression = handler(['test', 'consequent', 'alternate'], '?', [null, blockToFunction, blockToFunction]);
 
   return {
     visitor: {
@@ -44,8 +45,26 @@ module.exports = function(babel) {
       UnaryExpression: unary,
       BinaryExpression: mostCommonExpression,
       LogicalExpression: mostCommonExpression,
-      ConditionalExpression: conditionalExpression('?'),
-      MemberExpression: handler(['object', 'property'], '.')
+      ConditionalExpression: conditionalExpression,
+      IfStatement: conditionalExpression,
+      ExpressionStatement (path, state) {
+        const expression = path.node.expression
+        if (expression.type === "AssignmentExpression" && expression.left.type === "MemberExpression") {
+          path.node.left = expression.left.object
+          path.node.middle = expression.left.property
+          path.node.right = expression.right
+          handler(['left', 'middle', 'right'], 'set')(path)
+        }
+      },
+      MemberExpression (path) {
+        const assignment = path.parent.parentExpression;
+        if (assignment) {
+          assignment.replacementNode = path
+          handler(['replacementNode', 'right'], 'set')(assignment)
+        } else {
+          handler(['object', 'property'], 'get')(path)
+        }
+      }
     }
   };
 };

@@ -1,3 +1,8 @@
 var x;
 x = 5;
-document = x * 10;
+var y = {}
+y.x = x * 10;
+
+if (true) {}
+
+var a = y.z * 2
