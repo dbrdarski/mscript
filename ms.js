@@ -25,8 +25,10 @@ function invokeBlasphemy (fn, path) {
   : isBlashphemer(path) && fn(path);
 }
 
+const spreadBlasphemy = invokeBlasphemy(spreadWord);
+
 const applyHandlers = (node, handlers = []) => (value, index) => (handlers[index] || id)(node[value]);
-// const helper = (block) => console.log(block) || block;
+const helper = (block) => console.log(block) || block;
 const getBinding = (scope, binding) => scope.bindings[binding] || (scope.parent ? getBinding(scope.parent, binding) : null);
 
 module.exports = function(babel) {
@@ -61,14 +63,10 @@ module.exports = function(babel) {
           enter (path) {
             switch (path.node.type) {
               case 'Identifier': {
-                const definition = invokeBlasphemy(spreadWord, path);
-                // definition && console.log('AAAA', path.node.name)
+                const definition = spreadBlasphemy(path);
                 if (definition) return;
-
                 const binding = getBinding(path.scope, path.node.name);
                 blashphemyBindings.has(binding) && spreadWord(path);
-                // console.log(path.node.name, binding && [binding.identifier])
-                // binding && binding.identifier.blasphemer && spreadWord(path);
                 break;
               }
               case 'CallExpression': {
@@ -79,14 +77,9 @@ module.exports = function(babel) {
               case 'VariableDeclaration': {
                 break;
               }
-              // case 'FunctionExpression':
-              // case 'ArrowFunctionExpression':
-              // case 'TemplateLiteral':
-              //   path.node.inJSXExpression = false;
               default: {
-                invokeBlasphemy(spreadWord, path) // && console.log('enter', path.node.type);
+                spreadBlasphemy(path) // && console.log('enter', path.node.type);
               }
-              // console.log(path.node.type, 'enter', isBlashphemer(path))
             }
           }, exit (path) {
             switch (path.node.type) {
@@ -100,16 +93,13 @@ module.exports = function(babel) {
                 break;
               }
               default: {
-                invokeBlasphemy(spreadWord, path) // && console.log('enter', path.node.type);
+                spreadBlasphemy(path) // && console.log('enter', path.node.type);
               }
             }
           }
         })
       },
       UnaryExpression: { exit: invokeBlasphemy(unary) },
-      // Identifier (path) {
-      //   const match = getBinding(path.scope, path.node.name);
-      // },
       BinaryExpression: { exit: invokeBlasphemy(mostCommonExpression) },
       LogicalExpression: { exit: invokeBlasphemy(mostCommonExpression) },
       ConditionalExpression: { exit: invokeBlasphemy(conditionalExpression) },
@@ -125,18 +115,6 @@ module.exports = function(babel) {
           }
         })
       },
-      // AssignmentExpression: {
-      //   exit: invokeBlasphemy ((path) => {
-      //     console.log(path.node)
-      //     const expression = path.node.right;
-      //     if (expression.type === "AssignmentExpression" && path.node.left.type === "MemberExpression") {
-      //       expression.target = expression.left.object;
-      //       expression.prop = getKey(expression.left);
-      //       expression.val = expression.right;
-      //       handler(['target', 'prop', 'val'], { identifier: 'set', node: expression })(expression);
-      //     }
-      //   })
-      // },
       MemberExpression: {
         exit: invokeBlasphemy((path) => {
           const parent = path.parent;
@@ -151,26 +129,3 @@ module.exports = function(babel) {
     }
   };
 };
-
-// ExpressionStatement: {
-//   exit (path, state) {
-//     const expression = path.node.expression;
-//     if (expression.type === "AssignmentExpression" && expression.left.type === "MemberExpression") {
-//       path.node.left = expression.left.object;
-//       path.node.middle = getKey(expression.left);
-//       path.node.right = expression.right;
-//       handler(['left', 'middle', 'right'], 'set')(path);
-//     }
-//   }
-// },
-// MemberExpression: {
-//   exit (path) {
-//     const parent = path.parent;
-//     if (parent.type === 'AssignmentExpression' && parent.left === path.node) {
-//       // const assignment = path.findParent(path => path.isExpressionStatement());
-//       return;
-//     }
-//     path.node.right = getKey(path.node);
-//     handler(['object', 'right'], 'get')(path);
-//   }
-// }
