@@ -7,7 +7,7 @@ var fileName = process.argv[2];
 
 // console.log(Object.keys(babel));
 
-fs.readFile(fileName, function(err, data) {
+fs.readFile(`${fileName}.mori.js`, function(err, data) {
   if(err) throw err;
 
   var src = data.toString();
@@ -16,5 +16,5 @@ fs.readFile(fileName, function(err, data) {
     plugins: ["@babel/plugin-transform-react-jsx", moriscript]
   });
 
-  console.log(out.code);
+  fs.writeFile(`${fileName}.js`, out.code, () => { console.log(out.code); });
 });

@@ -20,7 +20,7 @@ export const operators = {
   'in': flat.bind((x, y) => x in y),
   '&': flat.bind((x, y) => x & y),
   '|': flat.bind((x, y) => x | y),
-  '~': flat.bind((x, y) => x ~ y),
+  '~': flat.bind((x) => ~ x),
   '^': flat.bind((x, y) => x ^ y),
   '<<': flat.bind((x, y) => x << y),
   '>>': flat.bind((x, y) => x >> y),
@@ -46,24 +46,22 @@ const define = (target, ...params) => {
   }
 }
 
-export const createObservable = () => {
+export const createObservable = (getter) => {
   let dirty = false;
   let observers = [];
-  let valueCache;
 
   function update (newObserverList) {
     this.position = newObserverList.length;
     newObserverList.push(this);
   }
 
-  const subscribe = (...fns) => {
-    if (!fns.length) return;
-    const item = { fns, update, position: void 0 };
+  const subscribe = (fn) => {
+    const item = { fn, update, position: void 0 };
     item.update(observers);
 
-    return (...newHandlers) => {
+    return (newHandler) => {
       observers[item.position] = newHandler || false;
-      if (!newHandlers.length) dirty = true;
+      if (!newHandler.length) dirty = true;
     }
   };
 
@@ -72,7 +70,7 @@ export const createObservable = () => {
       const newObserverList = [];
       for (observer of observers) {
         if (observer) {
-          observer.fns.forEach(apply);
+          observer.fn(getter);
           observer.update(newObserverList)
         }
       }
@@ -81,7 +79,7 @@ export const createObservable = () => {
     } else {
       observers.forEach(
         (o) => {
-          return o.fns.map(apply);
+          return o.fn(getter);
         }
       );
     }
@@ -96,7 +94,11 @@ function contextApplyEach () {
   this.forEach(apply);
 }
 
-function memo (fn, cached = false, cache) => [
+function subscribeDependency (observable) {
+  observable.subscribe(this);
+}
+
+const memo = (fn, cached = false, cache) => [
   function () {
     if (!cached) {
       cache = fn();
@@ -104,17 +106,27 @@ function memo (fn, cached = false, cache) => [
     }
     return cache;
   }, function invalidate () {
-    cached = false
+    if (cached === true) {
+      cached = false;
+      return true;
+    }
+    return false;
   }
-}
+];
 
 // NEXT: MEMO
+
+function flatInner (flatten, args) {
+  return this.apply(null, args.map(flatten));
+}
 
 function flat (...args) {
   const [ fn, invalidate ] = memo(flatInner.bind(this, flatten, args));
   const [ notify, subscribe ] = createObservable();
   // subscribes to dependancies and creates destroy fn that unsubscribes from deps
-  const destroy = contextApplyEach.bind(filterFlattenApply(args, reactive => reactive.subscribe(invalidate, notify)));
+
+  const onChange = () => invalidate() && notify();
+  const destroy = contextApplyEach.bind(filterFlattenApply(args, subscribeDependency.bind(onChange)));
 
   define(fn, {
     destroy,
@@ -125,16 +137,29 @@ function flat (...args) {
   return fn;
 }
 
-function flatInner (flatten, args) {
-  return this.apply(null, args.map(flatten));
+function conditionalInner (flatten, condition, args, cache) {
+  cache.current = this(flatten(condition), ...args);
+  return flatten(cache.current);
 }
 
 function conditional (condition, ...args) {
-  return computed(conditionalInner.bind(this, flatten, condition, args));
-}
+  const cache = {};
+  const [ fn, invalidate ] = memo(conditionalInner.bind(this, flatten, condition, args, cache));
+  const [ notify, subscribe ] = createObservable();
 
-function conditionalInner (flatten, condition, args) {
-  return flatten(this(flatten(condition), ...args));
+  const onChange = () => invalidate() && notify();
+  const conditionalOnChange = (getter) => getter === cache.current && invalidate() && notify();
+
+  // subscribes to dependancies and creates destroy fn that unsubscribes from deps
+  const destroy = contextApplyEach.bind([
+    subscribeDependency.call(onChange, condition),
+    ...filterFlattenApply(args, subscribeDependency.bind(onChange))
+  ]);
+
+  define(fn, {
+    destroy,
+    subscribe
+  });
 }
 
 function M_Walker (parent, current, operators, operator, ...args) {
@@ -142,5 +167,5 @@ function M_Walker (parent, current, operators, operator, ...args) {
 }
 
 const M = (op, ...args) => {
-  const fn = operators[op](...args)
+  return operators[op](...args)
 }
