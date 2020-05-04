@@ -32,7 +32,8 @@ y.a = x * 10 + 3 + x;
 var key = value('b');
 M("set", y, key, y.zxc = y.xcv = 'a1');
 var a = y.a;
-var b = M("get", y, key);
+var b = M("get", y, key); // const [ someVal, setSomeVal ] = value(3);
+
 const a1 = M("+", 1 + 4, M("*", 5, value(3))); // const a1 = computed(a => 5 + 5 * a, [ value(3) ]
 
 const b1 = 2 + 3;

@@ -35,6 +35,7 @@ y[key] = y.zxc = y.xcv = 'a1'
 var a = y.a
 var b = y[key]
 
+// const [ someVal, setSomeVal ] = value(3);
 const a1 = 1 + 4 + 5 * value(3)
 // const a1 = computed(a => 5 + 5 * a, [ value(3) ]
 

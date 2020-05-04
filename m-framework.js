@@ -122,7 +122,7 @@ function flatInner (flatten, args) {
 
 function flat (...args) {
   const [ fn, invalidate ] = memo(flatInner.bind(this, flatten, args));
-  const [ notify, subscribe ] = createObservable();
+  const [ notify, subscribe ] = createObservable(fn);
   // subscribes to dependancies and creates destroy fn that unsubscribes from deps
 
   const onChange = () => invalidate() && notify();
@@ -145,7 +145,7 @@ function conditionalInner (flatten, condition, args, cache) {
 function conditional (condition, ...args) {
   const cache = {};
   const [ fn, invalidate ] = memo(conditionalInner.bind(this, flatten, condition, args, cache));
-  const [ notify, subscribe ] = createObservable();
+  const [ notify, subscribe ] = createObservable(fn);
 
   const onChange = () => invalidate() && notify();
   const conditionalOnChange = (getter) => getter === cache.current && invalidate() && notify();
@@ -162,10 +162,24 @@ function conditional (condition, ...args) {
   });
 }
 
+export const value = (value) => {
+  const getter = () => value;
+  const [ notify, subscribe ] = createObservable(getter);
+  const setter = (v) => {
+    if (value === v) return;
+    value = v;
+    notify();
+  };
+  define(getter, {
+    subscribe
+  });
+  return [ getter, setter ];
+};
+
 function M_Walker (parent, current, operators, operator, ...args) {
   const parentCache = parent;
 }
 
-const M = (op, ...args) => {
+export const M = (op, ...args) => {
   return operators[op](...args)
 }
