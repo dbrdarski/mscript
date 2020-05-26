@@ -20,9 +20,10 @@ export const M = (op, ...args) => {
 const [ number, setNumber ] = value(3);
 const [ string, setString ] = value('abc');
 const [ showString, setShowString ] = value(false);
+
 // const newState = state + 1;
 const newState = M('?', showString, M('+', string, ' ok'), M('+', number, 1));
-console.log(newState)
+
 window.setNumber = setNumber;
 window.setString = setString;
 window.setShowString = setShowString;
