@@ -17,11 +17,15 @@ export const M = (op, ...args) => {
 
 // APP //
 
-const [ state, setState ] = value(3);
+const [ number, setNumber ] = value(3);
+const [ string, setString ] = value('abc');
+const [ showString, setShowString ] = value(false);
 // const newState = state + 1;
-const newState = M('+', state, 1);
-
-window.setState = setState;
+const newState = M('?', showString, M('+', string, ' ok'), M('+', number, 1));
+console.log(newState)
+window.setNumber = setNumber;
+window.setString = setString;
+window.setShowString = setShowString;
 
 const App = () => {
   document.body.innerHTML = newState();

@@ -32,11 +32,13 @@ export function flat (...args) {
 }
 
 function conditionalInner (flatten, condition, args, cache) {
+  // this context is an operator fn
   cache.current = this(flatten(condition), ...args);
   return flatten(cache.current);
 }
 
 export function conditional (condition, ...args) {
+  // this context is an operator fn
   const cache = {};
   const [ fn, invalidate ] = memo(conditionalInner.bind(this, flatten, condition, args, cache));
   const [ notify, subscribe ] = createObservable(fn);
@@ -47,11 +49,13 @@ export function conditional (condition, ...args) {
   // subscribes to dependancies and creates destroy fn that unsubscribes from deps
   const destroy = contextApplyEach.bind([
     subscribeDependency.call(onChange, condition),
-    ...filterFlattenApply(args, subscribeDependency.bind(onChange))
+    ...filterFlattenApply(args, subscribeDependency.bind(conditionalOnChange))
   ]);
 
   define(fn, {
     destroy,
     subscribe
   });
+
+  return fn;
 }
