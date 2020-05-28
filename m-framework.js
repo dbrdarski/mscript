@@ -21,7 +21,7 @@ const [ number, setNumber ] = value(3);
 const [ string, setString ] = value('abc');
 const [ showString, setShowString ] = value(false);
 
-// const newState = state + 1;
+// const newState = showString ? string + ' ok' : number + 1;
 const newState = M('?', showString, M('+', string, ' ok'), M('+', number, 1));
 
 window.setNumber = setNumber;
