@@ -26,6 +26,17 @@ import M from './m-framework.js'
 //   asde + bsdf
 // }
 
+function List () {
+  var str = '123'
+  return (
+    <ul class="list" {...props}>
+      { shouldShow && (<Li class="list-item">1{2}{'3'}{str}3</Li>) }
+      <Li class="list-item">2</Li>
+    </ul>
+  )
+}
+
+
 var x;
 x = 5;
 var y = {}

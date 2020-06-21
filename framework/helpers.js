@@ -1,5 +1,5 @@
 import { define, flatten, memo, contextApplyEach, filterFlattenApply, subscribeDependency } from './utils';
-import { createObservable } from './observable'
+import { createObservable } from './observable';
 
 function flatInner (flatten, args) {
   // this context is an operator fn

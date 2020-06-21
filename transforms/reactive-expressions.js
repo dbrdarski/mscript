@@ -1,38 +1,38 @@
 const traverse = require("@babel/traverse");
 const id = x => x;
 
-const blashphemyKeys = {
+const reactiveKeys = {
   value: true,
   computed: true
 }
 
-const blashphemyBindings = new WeakSet;
+const reactiveBindings = new WeakSet;
 
 
-const isBlashphemyIdentifier = (key) => blashphemyKeys.hasOwnProperty(key);
+const isReactiveIdentifier = (key) => reactiveKeys.hasOwnProperty(key);
 
-// const isBlashphemer = (path) => path.parent.blasphemer || path.node.blasphemer;
-const isBlashphemer = (path) => path.node.blasphemer;
-const spreadWord = (path) => {
-  path.node.blasphemer = true;
-  path.parent.blasphemer = true;
+// const isReactive = (path) => path.parent.reactive || path.node.reactive;
+const isReactive = (path) => path.node.reactive;
+const setNodesReactive = (path) => {
+  path.node.reactive = true;
+  path.parent.reactive = true;
   return true;
 }
 
-function invokeBlasphemy (fn, path) {
+function setReactive (fn, path) {
   return path == null
-  ? invokeBlasphemy.bind(null, fn)
-  : isBlashphemer(path) && fn(path);
+  ? setReactive.bind(null, fn)
+  : isReactive(path) && fn(path);
 }
 
-const spreadBlasphemy = invokeBlasphemy(spreadWord);
+const propagateReactivity = setReactive(setNodesReactive);
 
 const applyHandlers = (node, handlers = []) => (value, index) => (handlers[index] || id)(node[value]);
 const helper = (block) => console.log(block) || block;
 const getBinding = (scope, binding) => scope.bindings[binding] || (scope.parent ? getBinding(scope.parent, binding) : null);
 
-module.exports = function(babel) {
-  var t = babel.types;
+module.exports = function (babel) {
+  const t = babel.types;
 
   const getKey = (node) => node.computed ? node.property : t.stringLiteral(node.property.name);
   const mApply = (node, args, operator, handlers) => t.callExpression(
@@ -44,7 +44,7 @@ module.exports = function(babel) {
     const target = node || path.node;
     const operator = identifier || target.operator;
     path.replaceWith(mApply(target, args, operator, handlers));
-    // spreadWord(path);
+    // setNodesReactive(path);
   };
   const pipeNonNull = (...fns) => (val) => val == null ? null : fns.reduce((acc, fn) => fn(acc), val);
   const blockToFunction = (node) => node.type === 'BlockStatement' ? t.functionExpression(null, [], node) : node;
@@ -63,49 +63,49 @@ module.exports = function(babel) {
           enter (path) {
             switch (path.node.type) {
               case 'Identifier': {
-                const definition = spreadBlasphemy(path);
+                const definition = propagateReactivity(path);
                 if (definition) return;
                 const binding = getBinding(path.scope, path.node.name);
-                blashphemyBindings.has(binding) && spreadWord(path);
+                reactiveBindings.has(binding) && setNodesReactive(path);
                 break;
               }
               case 'CallExpression': {
-                // console.log(isBlashphemyIdentifier(path.node.callee.name) && path.node.callee.name)
-                isBlashphemyIdentifier(path.node.callee.name) && spreadWord(path);
+                // console.log(isReactiveIdentifier(path.node.callee.name) && path.node.callee.name)
+                isReactiveIdentifier(path.node.callee.name) && setNodesReactive(path);
                 break;
               }
               case 'VariableDeclaration': {
                 break;
               }
               default: {
-                spreadBlasphemy(path) // && console.log('enter', path.node.type);
+                propagateReactivity(path) // && console.log('enter', path.node.type);
               }
             }
           }, exit (path) {
             switch (path.node.type) {
               case 'VariableDeclarator': {
-                if (isBlashphemer(path)) {
+                if (isReactive(path)) {
                   // console.log('AAAAAAAAAAAAAAAAAAAAA')
                   const { name } = path.node.id;
                   const binding = getBinding(path.scope, name);
-                  blashphemyBindings.add(binding);
+                  reactiveBindings.add(binding);
                 }
                 break;
               }
               default: {
-                spreadBlasphemy(path) // && console.log('enter', path.node.type);
+                propagateReactivity(path) // && console.log('enter', path.node.type);
               }
             }
           }
         })
       },
-      UnaryExpression: { exit: invokeBlasphemy(unary) },
-      BinaryExpression: { exit: invokeBlasphemy(mostCommonExpression) },
-      LogicalExpression: { exit: invokeBlasphemy(mostCommonExpression) },
-      ConditionalExpression: { exit: invokeBlasphemy(conditionalExpression) },
-      // IfStatement: { exit: invokeBlasphemy(conditionalExpression) },
+      UnaryExpression: { exit: setReactive(unary) },
+      BinaryExpression: { exit: setReactive(mostCommonExpression) },
+      LogicalExpression: { exit: setReactive(mostCommonExpression) },
+      ConditionalExpression: { exit: setReactive(conditionalExpression) },
+      // IfStatement: { exit: setReactive(conditionalExpression) },
       ExpressionStatement: {
-        exit: invokeBlasphemy ((path, state) => {
+        exit: setReactive ((path, state) => {
           const expression = path.node.expression;
           if (expression.type === "AssignmentExpression" && expression.left.type === "MemberExpression") {
             path.node.target = expression.left.object;
@@ -116,7 +116,7 @@ module.exports = function(babel) {
         })
       },
       MemberExpression: {
-        exit: invokeBlasphemy((path) => {
+        exit: setReactive((path) => {
           const parent = path.parent;
           if (parent.type === 'AssignmentExpression' && parent.left === path.node) {
             // const assignment = path.findParent(path => path.isExpressionStatement());
