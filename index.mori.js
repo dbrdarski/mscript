@@ -26,6 +26,8 @@ import M from './m-framework.js'
 //   asde + bsdf
 // }
 
+const shouldShow = value(true)
+
 function List () {
   var str = '123'
   return (
@@ -50,8 +52,8 @@ var a = y.a
 var b = y[key]
 
 // const [ someVal, setSomeVal ] = value(3);
-const a1 = 1 + 4 + 5 * value(3)
-// const a1 = computed(a => 5 + 5 * a, [ value(3) ]
+const a1 = 1 + 2 + 3 + 4 + 5 * value(3)
+// const a1 = computed(([ a ]) => 1 + 2 + 3 + 4 + 5 * a, [ value(3) ]
 
 const b1 = 2 + 3
 const c1 = a1 + b1

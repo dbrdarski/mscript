@@ -26,13 +26,15 @@ import M from './m-framework.js'; // import sdf, { dfg } from 'sdf'
 //   asde + bsdf
 // }
 
+const shouldShow = value(true);
+
 function List() {
   var str = '123';
   return h("div", {}, M.fragment(h("span", {}, " title "), h("ul", _extends({
     class: "list"
-  }, props), shouldShow && h(Li, {
+  }, props), M("&&", shouldShow, h(Li, {
     class: "list-item"
-  }, "123", str, "3"), h(Li, {
+  }, "123", str, "3")), h(Li, {
     class: "list-item"
   }, "2"))));
 }
@@ -46,7 +48,7 @@ M("set", y, key, y.zxc = y.xcv = 'a1');
 var a = y.a;
 var b = M("get", y, key); // const [ someVal, setSomeVal ] = value(3);
 
-const a1 = M("+", 1 + 4, M("*", 5, value(3))); // const a1 = computed(a => 5 + 5 * a, [ value(3) ]
+const a1 = M("+", 1 + 2 + 3 + 4, M("*", 5, value(3))); // const a1 = computed(([ a ]) => 1 + 2 + 3 + 4 + 5 * a, [ value(3) ]
 
 const b1 = 2 + 3;
 const c1 = M("+", a1, b1); // const c1 = computed(a1 => a1 + b1, [ a1 ])
