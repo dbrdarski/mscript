@@ -105,6 +105,17 @@ exports.default = function (_ref) {
      * Node Transformers
      * ======================================================================= */
 
+    var JSXFragment = function JSXFragment (node) {
+      return t.callExpression(
+       t.memberExpression(
+         t.identifier('M'),
+         t.identifier('fragment'),
+         false
+       ),
+       JSXChildren(node.children)
+     );
+   };
+
     var JSXIdentifier = function JSXIdentifier(node) {
       return t.stringLiteral(node.name);
     };
@@ -196,7 +207,8 @@ exports.default = function (_ref) {
     };
 
     var JSXElement = function JSXElement(node) {
-      return t.callExpression(t.Identifier('h'), [
+      // console.log({ o: node.openingElement, c: node.children[0] })
+      return t.callExpression(t.identifier('h'), [
         JSXElementName(node.openingElement.name),
         JSXAttributes(node.openingElement.attributes),
         ...JSXChildren(node.children)
@@ -204,7 +216,12 @@ exports.default = function (_ref) {
       ]);
     };
 
-    var JSXChild = transformOnType({ JSXText: JSXText, JSXElement: JSXElement, JSXExpressionContainer: JSXExpressionContainer });
+    var JSXChild = transformOnType({
+      JSXText: JSXText,
+      JSXElement: JSXElement,
+      JSXExpressionContainer: JSXExpressionContainer,
+      JSXFragment: JSXFragment
+    });
 
     var JSXChildren = function JSXChildren(nodes) {
       return nodes.map(JSXChild).filter(Boolean)
@@ -225,7 +242,11 @@ exports.default = function (_ref) {
     };
 
     // Actually replace JSX with an object.
-    path.replaceWith(JSXElement(path.node));
+    path.replaceWith(
+      path.node.type === 'JSXFragment'
+        ? JSXFragment(path.node)
+        : JSXElement(path.node)
+      );
   };
 
   /* ==========================================================================
@@ -235,7 +256,8 @@ exports.default = function (_ref) {
   return {
     inherits: require('babel-plugin-syntax-jsx'),
     visitor: {
-      JSXElement: visitJSXElement
+      JSXElement: visitJSXElement,
+      JSXFragment: visitJSXElement
     }
   };
 };

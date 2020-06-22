@@ -28,13 +28,13 @@ import M from './m-framework.js'; // import sdf, { dfg } from 'sdf'
 
 function List() {
   var str = '123';
-  return h("ul", _extends({
+  return h("div", {}, M.fragment(h("span", {}, " title "), h("ul", _extends({
     class: "list"
   }, props), shouldShow && h(Li, {
     class: "list-item"
   }, "123", str, "3"), h(Li, {
     class: "list-item"
-  }, "2"));
+  }, "2"))));
 }
 
 var x;

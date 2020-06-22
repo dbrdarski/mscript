@@ -29,10 +29,13 @@ import M from './m-framework.js'
 function List () {
   var str = '123'
   return (
-    <ul class="list" {...props}>
-      { shouldShow && (<Li class="list-item">1{2}{'3'}{str}3</Li>) }
-      <Li class="list-item">2</Li>
-    </ul>
+    <div><>
+        <span> title </span>
+        <ul class="list" {...props}>
+          { shouldShow && (<Li class="list-item">1{2}{'3'}{str}3</Li>) }
+          <Li class="list-item">2</Li>
+        </ul>
+      </></div>
   )
 }
 
