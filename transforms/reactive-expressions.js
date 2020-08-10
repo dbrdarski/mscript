@@ -1,3 +1,7 @@
+// VariableDeclarator needs to handle obj and array decostruction
+// NOT: THe 'isReactive' logic needs to be breaken down
+// NOT: to 'reactiveCreator' and 'reactiveExpr'
+
 const traverse = require("@babel/traverse");
 const id = x => x;
 
@@ -6,15 +10,14 @@ const reactiveKeys = {
   computed: true
 }
 
-const reactiveBindings = new WeakSet;
-
+const reactiveBindings = new WeakMap;
 
 const isReactiveIdentifier = (key) => reactiveKeys.hasOwnProperty(key);
 
 // const isReactive = (path) => path.parent.reactive || path.node.reactive;
 const isReactive = (path) => path.node.reactive;
 const setNodesReactive = (path) => {
-  path.node.reactive = true;
+  // path.node.reactive = true;
   path.parent.reactive = true;
   return true;
 }
@@ -30,15 +33,16 @@ const propagateReactivity = setReactive(setNodesReactive);
 const applyHandlers = (node, handlers = []) => (value, index) => (handlers[index] || id)(node[value]);
 const helper = (block) => console.log(block) || block;
 const getBinding = (scope, binding) => scope.bindings[binding] || (scope.parent ? getBinding(scope.parent, binding) : null);
-
 module.exports = function (babel) {
   const t = babel.types;
 
-  const getKey = (node) => node.computed ? node.property : t.stringLiteral(node.property.name);
-  const mApply = (node, args, operator, handlers) => t.callExpression(
+  const mExpression = (operator, args) => t.callExpression(
     t.identifier('M'),
-    [t.stringLiteral(operator), ...args.map(applyHandlers(node, handlers)).filter(x => x != null)]
+    [t.stringLiteral(operator), ...args]
   );
+
+  const getKey = (node) => node.computed ? node.property : t.stringLiteral(node.property.name);
+  const mApply = (node, args, operator, handlers) => mExpression(operator, args.map(applyHandlers(node, handlers)).filter(x => x != null));
 
   const handler = (args, { identifier, handlers, node } = {}) => function (path, state) {
     const target = node || path.node;
@@ -61,16 +65,23 @@ module.exports = function (babel) {
       Program: function (path) {
         path.traverse({
           enter (path) {
+            // console.log('N enter', path.node.name, path.node.type)
             switch (path.node.type) {
               case 'Identifier': {
-                const definition = propagateReactivity(path);
-                if (definition) return;
+                const notAlreadyReactive = propagateReactivity(path);
+                if (notAlreadyReactive) return;
                 const binding = getBinding(path.scope, path.node.name);
-                reactiveBindings.has(binding) && setNodesReactive(path);
+                const reactiveBinding = reactiveBindings.get(binding)
+                reactiveBinding && setNodesReactive(path);
+                // reactiveBinding && console.log('COMPARISON', reactiveBinding.end, path.node.start)
+                // console.log('>>', path.node.name, [reactiveBindings.has(binding), path.parent.reactive])
+                // console.log('ID', path.node.name === 'c1' && [reactiveBindings.has(binding), path.parent.reactive, path.parent.type])
                 break;
               }
               case 'CallExpression': {
+                // console.log('CALL', 'asdf')
                 // console.log(isReactiveIdentifier(path.node.callee.name) && path.node.callee.name)
+                propagateReactivity(path)
                 isReactiveIdentifier(path.node.callee.name) && setNodesReactive(path);
                 break;
               }
@@ -82,13 +93,14 @@ module.exports = function (babel) {
               }
             }
           }, exit (path) {
+            // console.log('N exit', path.node.name, path.node.type)
             switch (path.node.type) {
               case 'VariableDeclarator': {
                 if (isReactive(path)) {
                   // console.log('AAAAAAAAAAAAAAAAAAAAA')
                   const { name } = path.node.id;
                   const binding = getBinding(path.scope, name);
-                  reactiveBindings.add(binding);
+                  reactiveBindings.set(binding, path.parent);
                 }
                 break;
               }
@@ -104,9 +116,17 @@ module.exports = function (babel) {
       LogicalExpression: { exit: setReactive(mostCommonExpression) },
       ConditionalExpression: { exit: setReactive(conditionalExpression) },
       // IfStatement: { exit: setReactive(conditionalExpression) },
+      CallExpression: {
+        exit: setReactive((path, state) => {
+          const expression = path.node;
+          // console.log({ expression })
+          path.replaceWith(mExpression('call', [expression.callee, ...expression.arguments]));
+        })
+      },
       ExpressionStatement: {
         exit: setReactive ((path, state) => {
           const expression = path.node.expression;
+          // console.log('TYPE', expression.type)
           if (expression.type === "AssignmentExpression" && expression.left.type === "MemberExpression") {
             path.node.target = expression.left.object;
             path.node.prop = getKey(expression.left);

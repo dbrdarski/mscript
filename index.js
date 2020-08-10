@@ -30,13 +30,13 @@ const shouldShow = value(true);
 
 function List() {
   var str = '123';
-  return h("div", {}, M.fragment(h("span", {}, " title "), h("ul", _extends({
+  return M.fragment(element("span", null, " title "), element("ul", _extends({
     class: "list"
-  }, props), M("&&", shouldShow, h(Li, {
+  }, props), M("&&", shouldShow, component(Li, {
     class: "list-item"
-  }, "123", str, "3")), h(Li, {
+  }, "123", str, "3")), component(Li, {
     class: "list-item"
-  }, "2"))));
+  }, "2")));
 }
 
 var x;
@@ -55,4 +55,7 @@ const c1 = M("+", a1, b1); // const c1 = computed(a1 => a1 + b1, [ a1 ])
 
 const d1 = b1 + 1;
 const cond = value(true);
-const result = M("?", cond, M("+", a1, b1), M("+", c1, d1));
+const result = M("?", cond, M("+", a1, b1), M("+", c1, d1)); // let [fn] = value(x => x)
+
+let fn = value(x => x);
+M("call", M("get", fn, "apply"), null, [c1, 3]);

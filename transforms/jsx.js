@@ -46,13 +46,13 @@ exports.default = function (_ref) {
     var variablesRegex = void 0,
         jsxObjectTransformer = void 0;
 
-    if (useVariables === true) {
+    // if (useVariables === true) {
       // Use the default variables regular expression when true.
       variablesRegex = /^[A-Z]/;
-    } else if ((0, _isString2.default)(useVariables)) {
-      // If it’s a plain regular expression string.
-      variablesRegex = new RegExp(useVariables);
-    }
+    // } else if ((0, _isString2.default)(useVariables)) {
+    //   // If it’s a plain regular expression string.
+    //   variablesRegex = new RegExp(useVariables);
+    // }
 
     var executeExpression = t.callExpression;
     var jsxObjectTransformerCreator = function jsxObjectTransformerCreator(expression) {
@@ -72,13 +72,13 @@ exports.default = function (_ref) {
       path.findParent(function (p) {
         return p.isProgram();
       }).unshiftContainer('body', importDeclaration);
-    } else if (constructorFunction) {
-      // If the constructor function will be an in scope function.
-      var expression = constructorFunction.split('.').map((0, _ary2.default)(t.identifier, 1)).reduce((0, _ary2.default)(t.memberExpression, 2));
-      jsxObjectTransformer = jsxObjectTransformerCreator(expression);
-    } else {
-      // Otherwise, we won‘t be mapping.
-      jsxObjectTransformer = _identity2.default;
+    // } else if (constructorFunction) {
+    //   // If the constructor function will be an in scope function.
+    //   var expression = constructorFunction.split('.').map((0, _ary2.default)(t.identifier, 1)).reduce((0, _ary2.default)(t.memberExpression, 2));
+    //   jsxObjectTransformer = jsxObjectTransformerCreator(expression);
+    // } else {
+    //   // Otherwise, we won‘t be mapping.
+    //   jsxObjectTransformer = _identity2.default;
     }
 
     return {
@@ -105,17 +105,6 @@ exports.default = function (_ref) {
      * Node Transformers
      * ======================================================================= */
 
-    var JSXFragment = function JSXFragment (node) {
-      return t.callExpression(
-       t.memberExpression(
-         t.identifier('M'),
-         t.identifier('fragment'),
-         false
-       ),
-       JSXChildren(node.children)
-     );
-   };
-
     var JSXIdentifier = function JSXIdentifier(node) {
       return t.stringLiteral(node.name);
     };
@@ -134,9 +123,9 @@ exports.default = function (_ref) {
     });
 
     var JSXElementName = transformOnType({
-      JSXIdentifier: variablesRegex ? function (node) {
+      JSXIdentifier: function (node) {
         return variablesRegex.test(node.name) ? t.identifier(node.name) : JSXIdentifier(node);
-      } : JSXIdentifier,
+      },
       JSXNamespacedName: JSXNamespacedName,
       JSXMemberExpression: _JSXMemberExpression
     });
@@ -192,7 +181,7 @@ exports.default = function (_ref) {
       }
 
       if (objects.length === 0) {
-        return t.objectExpression([]);
+        return t.nullLiteral();
       } else if (objects.length === 1) {
         return objects[0];
       }
@@ -207,14 +196,25 @@ exports.default = function (_ref) {
     };
 
     var JSXElement = function JSXElement(node) {
-      // console.log({ o: node.openingElement, c: node.children[0] })
-      return t.callExpression(t.identifier('h'), [
-        JSXElementName(node.openingElement.name),
+      const tagName = JSXElementName(node.openingElement.name)
+      return t.callExpression(t.identifier(tagName.type === 'Identifier' ? 'component' : 'element'), [
+        tagName,
         JSXAttributes(node.openingElement.attributes),
         ...JSXChildren(node.children)
         // node.closingElement ? JSXChildren(node.children) : t.nullLiteral()
       ]);
     };
+
+    var JSXFragment = function JSXFragment (node) {
+      return t.callExpression(
+       t.memberExpression(
+         t.identifier('M'),
+         t.identifier('fragment'),
+         false
+       ),
+       JSXChildren(node.children)
+     );
+   };
 
     var JSXChild = transformOnType({
       JSXText: JSXText,
@@ -256,23 +256,24 @@ exports.default = function (_ref) {
   return {
     inherits: require('babel-plugin-syntax-jsx'),
     visitor: {
+      // Program: (path, scope) => console.log(path, scope),
       JSXElement: visitJSXElement,
       JSXFragment: visitJSXElement
     }
   };
 };
 
-var _isString = require('lodash/isString');
+// var _isString = require('lodash/isString');
+//
+// var _isString2 = _interopRequireDefault(_isString);
 
-var _isString2 = _interopRequireDefault(_isString);
+// var _identity = require('lodash/identity');
+//
+// var _identity2 = _interopRequireDefault(_identity);
 
-var _identity = require('lodash/identity');
-
-var _identity2 = _interopRequireDefault(_identity);
-
-var _ary = require('lodash/ary');
-
-var _ary2 = _interopRequireDefault(_ary);
+// var _ary = require('lodash/ary');
+//
+// var _ary2 = _interopRequireDefault(_ary);
 
 var _esutils = require('esutils');
 
@@ -281,7 +282,3 @@ var _esutils2 = _interopRequireDefault(_esutils);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var nameProperty = 'elementName';
-var attributesProperty = 'attributes';
-var childrenProperty = 'children';

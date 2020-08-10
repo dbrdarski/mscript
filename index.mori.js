@@ -31,13 +31,13 @@ const shouldShow = value(true)
 function List () {
   var str = '123'
   return (
-    <div><>
-        <span> title </span>
-        <ul class="list" {...props}>
-          { shouldShow && (<Li class="list-item">1{2}{'3'}{str}3</Li>) }
-          <Li class="list-item">2</Li>
-        </ul>
-      </></div>
+    <>
+      <span> title </span>
+      <ul class="list" {...props}>
+        { shouldShow && (<Li class="list-item">1{2}{'3'}{str}3</Li>) }
+        <Li class="list-item">2</Li>
+      </ul>
+    </>
   )
 }
 
@@ -62,3 +62,6 @@ const d1 = b1 + 1
 
 const cond = value(true)
 const result = cond ? a1 + b1 : c1 + d1
+// let [fn] = value(x => x)
+const fn = value(x => x)
+fn.apply(null, [c1, 3])
