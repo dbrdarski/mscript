@@ -5,10 +5,11 @@ init();
 
 window.addEventListener('DOMContentLoaded', (event) => {
   const input = document.querySelector('#input');
+  const display = document.querySelector('#display');
   document.querySelector('#submit').addEventListener('click', (e) => {
-    console.log(tokenize(input.value));
+    display.innerHTML = JSON.stringify(tokenize(input.value).map(({ token, type }) => ({ token, type })), null, 2);
   });
   document.querySelector('#print').addEventListener('click', (e) => {
-    console.log({ text: input.value });
+    display.innerHTML = input.value;
   });
 });
