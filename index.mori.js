@@ -65,3 +65,5 @@ const result = cond ? a1 + b1 : c1 + d1
 // let [fn] = value(x => x)
 const fn = value(x => x)
 fn.apply(null, [c1, 3])
+
+ref asdfghj = 3;

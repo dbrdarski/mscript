@@ -57,5 +57,6 @@ const d1 = b1 + 1;
 const cond = value(true);
 const result = M("?", cond, M("+", a1, b1), M("+", c1, d1)); // let [fn] = value(x => x)
 
-let fn = value(x => x);
+const fn = value(x => x);
 M("call", M("get", fn, "apply"), null, [c1, 3]);
+ref asdfghj = 3;

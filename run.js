@@ -15,11 +15,14 @@ fs.readFile(`${fileName}.mori.js`, function(err, data) {
   var src = data.toString();
 
   var out = babel.transform(src, {
-    plugins: [[jsx, {
-      function: 'h ',
-      module: 'mx',
-      useVariables: true
-    }], expressions]
+    plugins: [
+      [jsx, {
+        function: 'h ',
+        module: 'mx',
+        useVariables: true
+      }],
+      expressions
+    ]
   });
 
   fs.writeFile(`${fileName}.js`, out.code, () => { console.log(out.code); });

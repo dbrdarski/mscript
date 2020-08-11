@@ -86,6 +86,8 @@ module.exports = function (babel) {
                 break;
               }
               case 'VariableDeclaration': {
+                const { kind } = path.node;
+                console.log('KKK', { kind })
                 break;
               }
               default: {
