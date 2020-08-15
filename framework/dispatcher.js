@@ -23,3 +23,7 @@ const dispatch = () => {
 export const updateDOM = (updateFn) => {
   domUpdates.push(updateFn);
 }
+
+export const effect = (fn) => (...args) => {
+  return fn(...args);
+}

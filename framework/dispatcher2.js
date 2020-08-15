@@ -1,10 +1,7 @@
 import { apply } from './utils';
 import Queue from './queue';
 
-const evaluateFn = ([ fn, ...args ]) => {
-  console.log(fn, args)
-  return fn(...args);
-}
+const evaluateFn = ([ fn, ...args ]) => fn(...args);
 
 const dispatcherQueue = new Queue;
 const stateQueue = new Queue;
@@ -20,7 +17,6 @@ export const scheduleStateUpdate = (stateUpdate) => {
 // const evaluateUpdates = () => domUpdates.run(evaluateFn);
 
 const dispatch = () => {
-  console.log('dispatching!!!!', dispatcherIsRunning)
   dispatcherIsRunning = true;
   dispatcherQueue.run(evaluateFn);
   stateQueue.run(apply);
