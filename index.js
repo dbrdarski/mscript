@@ -59,4 +59,9 @@ const result = M("?", cond, M("+", a1, b1), M("+", c1, d1)); // let [fn] = value
 
 const fn = value(x => x);
 M("call", M("get", fn, "apply"), null, [c1, 3]);
-ref asdfghj = 3;
+let asdf = value(3);
+asdf = 4;
+let basd = M("+", asdf, 5);
+let xx = {};
+M("set", xx, "y", value(3));
+const yy = xx + 23; // ref asdfghj = 3;

@@ -1,5 +1,5 @@
 import { createObservable } from './observable';
-import { scheduleStateUpdate } from './dispatcher.js'
+import { scheduleStateUpdate } from './dispatcher2.js'
 import { define } from './utils';
 
 export const value = (value) => {

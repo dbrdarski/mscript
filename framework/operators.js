@@ -30,5 +30,5 @@ export const operators = {
   'typeof': flat.bind((x) => typeof x),
   'void': flat.bind(() => void 0),
   'instanceof': flat.bind((x, y) => x instanceof y),
-  'call': flat.bind(fn, ...args) => fn(...args)
+  'call': flat.bind((fn, ...args) => fn(...args))
 };

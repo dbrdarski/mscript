@@ -1,24 +1,43 @@
+const { getOrSetDefault } = require ('../utils');
+
 // VariableDeclarator needs to handle obj and array decostruction
 // NOT: THe 'isReactive' logic needs to be breaken down
 // NOT: to 'reactiveCreator' and 'reactiveExpr'
+
+// const { copyWithin, fill, pop, push, reverse, shift, sort, splice, unshhift } = Array.prototype;
+// const mutableArrayMethods = [ copyWithin, fill, pop, push, reverse, shift, sort, splice, unshhift ];
+// const mutableMethods = { ...mutableArrayMethods }
+
+const framework = {
+  useState: () => ({
+    reactiveGetter: {},
+    reactiveSetter: {}
+  })
+};
 
 const traverse = require("@babel/traverse");
 const id = x => x;
 
 const reactiveKeys = {
-  value: true,
-  computed: true
-}
+  value: true
+};
 
 const reactiveBindings = new WeakMap;
+const variables = new WeakMap;
+const values = new WeakMap;
 
 const isReactiveIdentifier = (key) => reactiveKeys.hasOwnProperty(key);
+const isStateConstructor = (key) => key === 'useState';
 
 // const isReactive = (path) => path.parent.reactive || path.node.reactive;
-const isReactive = (path) => path.node.reactive;
+const isReactive = (path) => {
+  const { reactive } = path.node;
+    return reactive && reactive.expression
+};
+
 const setNodesReactive = (path) => {
   // path.node.reactive = true;
-  path.parent.reactive = true;
+  getOrSetDefault(path.parent, 'reactive').expression = true;
   return true;
 }
 
@@ -33,6 +52,7 @@ const propagateReactivity = setReactive(setNodesReactive);
 const applyHandlers = (node, handlers = []) => (value, index) => (handlers[index] || id)(node[value]);
 const helper = (block) => console.log(block) || block;
 const getBinding = (scope, binding) => scope.bindings[binding] || (scope.parent ? getBinding(scope.parent, binding) : null);
+
 module.exports = function (babel) {
   const t = babel.types;
 
@@ -50,11 +70,22 @@ module.exports = function (babel) {
     path.replaceWith(mApply(target, args, operator, handlers));
     // setNodesReactive(path);
   };
+
+  const assignValueToVar = (variable, value, path) => {
+    // const value = path.node[valueNode];
+    // if (value) {
+      const binding = getBinding(path.scope, variable.name);
+      variables.set(binding, value); // value)
+      // values.set(value, value);
+    // }
+  }
+
   const pipeNonNull = (...fns) => (val) => val == null ? null : fns.reduce((acc, fn) => fn(acc), val);
   const blockToFunction = (node) => node.type === 'BlockStatement' ? t.functionExpression(null, [], node) : node;
   const ifToTernaryExpression = (node) => node.type === 'IfStatement' ? mApply(node) : node;
   const mostCommonExpression = handler(['left', 'right']);
   const unary = handler(['argument']);
+
   const conditionalExpression = handler(['test', 'consequent', 'alternate'], {
     identifier: '?',
     handlers :[ null, blockToFunction, pipeNonNull(blockToFunction, ifToTernaryExpression) ]
@@ -67,6 +98,17 @@ module.exports = function (babel) {
           enter (path) {
             // console.log('N enter', path.node.name, path.node.type)
             switch (path.node.type) {
+              case 'VariableDeclarator': {
+                assignValueToVar(path.node.id, path.node.init, path);
+                break;
+              }
+              case 'AssignmentExpression': {
+                // console.log('ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ');
+                console.log(path.node.type, '?');
+                path.node.left.type === 'Identifier' && assignValueToVar(path.node.left, path.node.right, path);
+                // path.node.left.type === 'MemberExpression' && assignValueToVar(path.node.expression.left, path.node.expression.right, path);
+                break;
+              }
               case 'Identifier': {
                 const notAlreadyReactive = propagateReactivity(path);
                 if (notAlreadyReactive) return;
@@ -87,7 +129,7 @@ module.exports = function (babel) {
               }
               case 'VariableDeclaration': {
                 const { kind } = path.node;
-                console.log('KKK', { kind })
+                // console.log('KKK', { kind })
                 break;
               }
               default: {

@@ -42,10 +42,10 @@ function List () {
 }
 
 
-var x;
-x = 5;
+var x
+x = 5
 var y = {}
-y.a = x * 10 + 3 + x;
+y.a = x * 10 + 3 + x
 var key = value('b')
 y[key] = y.zxc = y.xcv = 'a1'
 var a = y.a
@@ -66,4 +66,11 @@ const result = cond ? a1 + b1 : c1 + d1
 const fn = value(x => x)
 fn.apply(null, [c1, 3])
 
-ref asdfghj = 3;
+
+let asdf = value(3);
+asdf = 4;
+let basd = asdf + 5;
+let xx = {}
+xx.y = value(3);
+const yy = xx + 23;
+// ref asdfghj = 3;
