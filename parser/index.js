@@ -1,7 +1,7 @@
-import { tokenize } from './tokenizer';
-import { init } from './language';
+import { tokenize } from './language';
 
-init();
+// import { tokenize } from './tokenizer';
+// import { init } from './language';
 
 window.addEventListener('DOMContentLoaded', (event) => {
   const input = document.querySelector('#input');

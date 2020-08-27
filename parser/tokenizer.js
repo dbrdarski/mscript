@@ -1,79 +1,47 @@
-import { NODE_MATCH } from './definitions';
-import { getOrSetDefault } from './utils';
-
-// import { consumeSource } from './consumer';
-
-class TokenNode {
-  match (char) {
-    return this[char];
-  }
-}
-
-const tokensByName = {};
-const tokensByValue = {};
-const tokensRootNode = new TokenNode;
-
-function detectCollisions (value, name) {
-  if (tokensByName.hasOwnProperty(name)) throw Error (`A token named ${name} already exists`)
-  if (tokensByValue.hasOwnProperty(value)) throw Error (`A token for ${value} already exists`)
-}
-
-export const addToken = (value, name = value, propagate = true) => {
-  detectCollisions(value, name);
-  let node = tokensRootNode;
-  for (let i = 0; i < value.length; i +=1 ) {
-    const char = value[i];
-    node = getOrSetDefault(node, char, new TokenNode);
-  }
-  node[NODE_MATCH] = tokensByName[name] = tokensByValue[value] = { name, value, propagate };
-
-};
-
-export const tokenize = (source) => {
+/*
+ * Tiny tokenizer
+ *
+ * - Accepts a subject string and an object of regular expressions for parsing
+ * - Returns an array of token objects
+ *
+ * tokenize('this is text.', { word:/\w+/, whitespace:/\s+/, punctuation:/[^\w\s]/ }, 'invalid');
+ * result => [{ token="this", type="word" },{ token=" ", type="whitespace" }, Object { token="is", type="word" }, ... ]
+ *
+ */
+export const tokenizer = (parsers, defaultToken = 'unknown') => (s) => {
   const tokens = [];
-  const { length } = source;
-  let start = 0,
-      end = 0,
-      token = '',
-      prevMatch = null,
-      node = tokensRootNode;
-  while (end < length) {
-    const char = source[end];
-    const match = node.match(char);
-    token = token.concat(char);
-    if (match) {
-      node = match;
-      end += 1;
-      if (match.hasOwnProperty(NODE_MATCH)) {
-        prevMatch = {
-          start,
-          end,
-          token,
-          type: match[NODE_MATCH].name
-        };
+  let m, r, t;
+  while ( s ) {
+    t = null;
+    m = s.length;
+    for ( let key in parsers ) {
+      r = parsers[ key ].exec( s );
+      // try to choose the best match if there are several
+      // where "best" is the closest to the current starting point
+      if ( r && ( r.index < m ) ) {
+        t = {
+          token: r[ 0 ],
+          type: key,
+          matches: r.slice( 1 )
+        }
+        m = r.index;
       }
-    } else {
-      node = tokensRootNode;
-      if (prevMatch == null) {
-        end = start + 1;
-        char = source[start];
-        tokens.push({
-          start,
-          end,
-          token: char,
-          type: /\d/.test(char) ? 'numeric' : 'char',
-        })
-        start = end;
-        token = '';
-        continue;
-      }
-      tokens.push(prevMatch);
-      start = prevMatch.end
-      end = prevMatch.end;
-      prevMatch = null;
-      token = '';
     }
+    if ( m ) {
+      // there is text between last token and currently
+      // matched token - push that out as default or "unknown"
+      tokens.push({
+        token : s.substr( 0, m ),
+        type  : defaultToken
+      });
+    }
+    if ( t ) {
+      // push current token onto sequence
+      tokens.push( t );
+    }
+    s = s.substr( m + (t ? t.token.length : 0) );
   }
-  prevMatch && tokens.push(prevMatch);
   return tokens;
-};
+}
+
+// tokenize('-1e23 + 23 * 13 *** 4 ++ \'dane ++ is + king\'');
