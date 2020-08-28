@@ -11,15 +11,15 @@ export function flat (...args) {
   // this context is an operator fn
   const [ fn, invalidate ] = memo(flatInner.bind(this, flatten, args));
   const [ notify, subscribe ] = createObservable(fn);
-  // subscribes to dependancies and creates destroy fn that unsubscribes from deps
 
+  // subscribes to dependancies and creates destroy fn that unsubscribes from deps
   const onChange = () => invalidate() && notify();
+
   // next line subscribes onChange to reactive getters in arguments (filtered by filterFlattenApply)
   // filterFlattenApply -> filters reactive getters and applies them to subsbsriber function
   // which return the unsubscribe fn
   // it ultimately returns an array of unsubscribe functions
   // which is then binded (the evalution is delayed) through contextApplyEach!!!
-
   const destroy = contextApplyEach.bind(filterFlattenApply(args, subscribeDependency.bind(onChange)));
 
   define(fn, {

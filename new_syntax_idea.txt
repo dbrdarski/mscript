@@ -1,79 +1,108 @@
-import * as Pero from './pero'
+import DynamicWizard from 'DynamicWizard'
 
-stateA: state | (Array, Number);
-propB: attr | [Array, Number];
-const doubleA = propA * 2;
+template: ({ prettyValue, click }) => (
+  <div>
+  	<p>{ prettyValue }</p>
+    <button onclick="click">Click</button>
+  </div>
+)
 
-watch: (stateA) => {
+setup: (props) => {
+  counter: state(0)
+  showCounter: state(true)
+  prettyValue: showCounter ? `${counter} ${m(asd)} times clicked ` : 'Hello world'
 
-}
+  click: effect(e => {
+    console.log(e)
+    counter += 1
+  })
 
-watch: ([stateA, oldValue], propB) => {
-
-}
-
-effect: () => {
-  return () => {
-
-  }
-}, false // false == []
-
-effect: (propB) => {
-  return () => {
-
-  }
-}
-
-
-state: dane = 123
-
-
-===================================
-
-
-import * as Pero from './pero'
-
-props: {
- showSomething = true | [Boolean, String]
- list = [] | Array
- id = null | {
-
- }
-}
-
-state: {
-  prop1 = 3 | [Array, Number]
-  double = prop1 * 2 ();
-}
-
-stateA: state(3) (Array | Number)
-export const stateA = state(3, [Array, Number]);
-
-propB: attr | [Array, Number];
-export const propB = attr(null, [Array, Number]);
-
-doubleA: propA * 2 | Number
-export const doubleA = propA * 2;
-
-watch: (stateA) => {
-
-}
-
-watch: ([stateA, oldValue], propB) => {
-
-}
-
-effect: () => {
-  return () => {
-
-  }
-}, false // false == []
-
-effect: (propB) => {
-  return () => {
-
+  return {
+  	click,
+    prettyValue
   }
 }
 
 
-state: dane = 123
+
+// 000000000000000
+
+// import * as Pero from './pero'
+//
+// stateA: state | (Array, Number);
+// propB: attr | [Array, Number];
+// const doubleA = propA * 2;
+//
+// watch: (stateA) => {
+//
+// }
+//
+// watch: ([stateA, oldValue], propB) => {
+//
+// }
+//
+// effect: () => {
+//   return () => {
+//
+//   }
+// }, false // false == []
+//
+// effect: (propB) => {
+//   return () => {
+//
+//   }
+// }
+//
+//
+// state: dane = 123
+//
+//
+// ===================================
+//
+//
+// import * as Pero from './pero'
+//
+// props: {
+//  showSomething = true | [Boolean, String]
+//  list = [] | Array
+//  id = null | {
+//
+//  }
+// }
+//
+// state: {
+//   prop1 = 3 | [Array, Number]
+//   double = prop1 * 2 ();
+// }
+//
+// stateA: state(3) (Array | Number)
+// export const stateA = state(3, [Array, Number]);
+//
+// propB: attr | [Array, Number];
+// export const propB = attr(null, [Array, Number]);
+//
+// doubleA: propA * 2 | Number
+// export const doubleA = propA * 2;
+//
+// watch: (stateA) => {
+//
+// }
+//
+// watch: ([stateA, oldValue], propB) => {
+//
+// }
+//
+// effect: () => {
+//   return () => {
+//
+//   }
+// }, false // false == []
+//
+// effect: (propB) => {
+//   return () => {
+//
+//   }
+// }
+//
+//
+// state: dane = 123
