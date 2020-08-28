@@ -43,5 +43,3 @@ export const tokenizer = (parsers, defaultToken = 'unknown') => (s) => {
   }
   return tokens;
 }
-
-// tokenize('-1e23 + 23 * 13 *** 4 ++ \'dane ++ is + king\'');
