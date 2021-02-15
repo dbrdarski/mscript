@@ -50,7 +50,7 @@ function setReactive (fn, path) {
 const propagateReactivity = setReactive(setNodesReactive);
 
 const applyHandlers = (node, handlers = []) => (value, index) => (handlers[index] || id)(node[value]);
-const helper = (block) => console.log(block) || block;
+const logger = (block) => console.log(block) || block;
 const getBinding = (scope, binding) => scope.bindings[binding] || (scope.parent ? getBinding(scope.parent, binding) : null);
 
 module.exports = function (babel) {
@@ -75,7 +75,8 @@ module.exports = function (babel) {
     // const value = path.node[valueNode];
     // if (value) {
       const binding = getBinding(path.scope, variable.name);
-      variables.set(binding, value); // value)
+      // console.log(1, { binding, value }); // value)
+      binding && variables.set(binding, value); // value)
       // values.set(value, value);
     // }
   }
@@ -98,13 +99,17 @@ module.exports = function (babel) {
           enter (path) {
             // console.log('N enter', path.node.name, path.node.type)
             switch (path.node.type) {
+              case 'LabeledStatement': {
+                console.log('LABEL', path.node)
+                break;
+              }
               case 'VariableDeclarator': {
                 assignValueToVar(path.node.id, path.node.init, path);
                 break;
               }
               case 'AssignmentExpression': {
                 // console.log('ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ALO ');
-                console.log(path.node.type, '?');
+                // console.log(path.node.type, '?');
                 path.node.left.type === 'Identifier' && assignValueToVar(path.node.left, path.node.right, path);
                 // path.node.left.type === 'MemberExpression' && assignValueToVar(path.node.expression.left, path.node.expression.right, path);
                 break;
@@ -144,6 +149,7 @@ module.exports = function (babel) {
                   // console.log('AAAAAAAAAAAAAAAAAAAAA')
                   const { name } = path.node.id;
                   const binding = getBinding(path.scope, name);
+                  // console.log(2, { binding, parent: path.parent });
                   reactiveBindings.set(binding, path.parent);
                 }
                 break;

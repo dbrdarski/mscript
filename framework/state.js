@@ -11,6 +11,9 @@ export const value = (value) => {
     notify();
   }
   const setter = (v) => {
+    if (typeof v === 'function') {
+      v = v(value)
+    }
     if (value === v) return;
     else if (queued === false) {
       scheduleStateUpdate(resolver);
