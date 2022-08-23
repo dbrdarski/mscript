@@ -1,9 +1,9 @@
-var fs = require('fs');
-var babel = require('@babel/core');
-// var jsx = require('./jsx');
-// const jsx = require('babel-plugin-transform-jsx')
-var expressions = require('./transforms/reactive-expressions');
-var jsx = require('./transforms/jsx');
+var fs = require("fs");
+var babel = require("@babel/core");
+// var jsx = require("./jsx");
+// const jsx = require("babel-plugin-transform-jsx")
+var expressions = require("./transforms/reactive-expressions");
+var jsx = require("./transforms/jsx");
 
 var fileName = process.argv[2];
 
@@ -17,8 +17,8 @@ fs.readFile(`${fileName}.mori.js`, function(err, data) {
   var out = babel.transform(src, {
     plugins: [
       [jsx, {
-        function: 'h ',
-        module: 'mx',
+        function: "h ",
+        module: "mx",
         useVariables: true
       }],
       expressions

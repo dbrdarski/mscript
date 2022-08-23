@@ -1,7 +1,7 @@
-import * as NodeTypes from './sample-language/node-types';
-import * as parsers from './sample-language/tokens';
+import * as NodeTypes from "./sample-language/node-types";
+import * as parsers from "./sample-language/tokens";
 
-import { createTokenType, parser } from './parser';
+import { createTokenType, parser } from "./parser";
 
 console.log({ parsers })
 

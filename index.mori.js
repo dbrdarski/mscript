@@ -1,5 +1,5 @@
-import M from './m-framework.js'
-// import sdf, { dfg } from 'sdf'
+import M from "./m-framework.js"
+// import sdf, { dfg } from "sdf"
 //
 // function asd () {
 //   let asdf;
@@ -36,12 +36,12 @@ $state: {
 // const shouldShow = value(true)
 //
 // function List () {
-//   var str = '123'
+//   var str = "123"
 //   return (
 //     <>
 //       <span> title </span>
 //       <ul class="list" {...props}>
-//         { shouldShow && (<Li class="list-item">1{2}{'3'}{str}3</Li>) }
+//         { shouldShow && (<Li class="list-item">1{2}{"3"}{str}3</Li>) }
 //         <Li class="list-item">2</Li>
 //       </ul>
 //     </>
@@ -53,8 +53,8 @@ $state: {
 // x = 5
 // var y = {}
 // y.a = x * 10 + 3 + x
-// var key = value('b')
-// y[key] = y.zxc = y.xcv = 'a1'
+// var key = value("b")
+// y[key] = y.zxc = y.xcv = "a1"
 // var a = y.a
 // var b = y[key]
 //

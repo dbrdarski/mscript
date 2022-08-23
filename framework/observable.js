@@ -2,8 +2,7 @@ export const createObservable = (getter) => {
   let dirty = false;
   let observers = [];
   // added cache - might remove
-  let cached = false;
-  let cache;
+  // let cache;
 
   function update (newObserverList) {
     this.position = newObserverList.length;
@@ -16,7 +15,7 @@ export const createObservable = (getter) => {
 
     return (newHandler) => {
       observers[item.position] = newHandler || false;
-      if (!newHandler.length) dirty = true;
+      if (!newHandler.length) dirty = true; // not sure about newHandler.length property
     }
   };
 
@@ -25,7 +24,8 @@ export const createObservable = (getter) => {
       const newObserverList = [];
       for (observer of observers) {
         if (observer) {
-          (cached && getter() === cache) || observer.fn(getter); // might remove first part!
+          //getter() === cache ||
+          observer.fn(getter);
           observer.update(newObserverList)
         }
       }
@@ -34,7 +34,8 @@ export const createObservable = (getter) => {
     } else {
       observers.forEach(
         (observer) => {
-          (cached && getter() === cache) || observer.fn(getter); // might remove first part!
+          // getter() === cache ||
+          observer.fn(getter);
         }
       );
     }

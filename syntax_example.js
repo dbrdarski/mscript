@@ -25,9 +25,9 @@ export const User = Vue.store(() => {
   }
 
   const redirectToLogin = (path) => {
-    Router.currentRoute.name !== 'login' && Router.push({
-      name: 'login',
-      query: { redirect: path && !path.includes('error') ? path : '/' }
+    Router.currentRoute.name !== "login" && Router.push({
+      name: "login",
+      query: { redirect: path && !path.includes("error") ? path : "/" }
     }).catch(logErrors)
   }
 
@@ -51,15 +51,15 @@ export const User = Vue.store(() => {
       setLoader(true)
       return axios.get(`${API_BASE}/logout`).catch((err) => {
         !err.response && Notify.create({
-          color: 'negative',
-          icon: 'error_outline',
-          message: err && err.message ? err.message : 'Connection refused - contact administrator'
+          color: "negative",
+          icon: "error_outline",
+          message: err && err.message ? err.message : "Connection refused - contact administrator"
         })
         reject(err)
       }).finally(() => {
       	setLoader(false)
-        uppdateUserSettings({ key: 'open_cases', value: '[]' })
-        setAxiosHeaders('')
+        uppdateUserSettings({ key: "open_cases", value: "[]" })
+        setAxiosHeaders("")
         closeServerEventsConnection()
         localStorage.clear()
         redirectToLogin(redirectPath)

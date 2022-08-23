@@ -1,6 +1,6 @@
-import { define, flatten, memo, contextApplyEach, filterFlattenApply, subscribeDependency } from './utils';
-import { createObservable } from './observable';
-import { scheduler } from './scheduler';
+import { define, flatten, memo, contextApplyEach, filterFlattenApply, subscribeDependency } from "./utils";
+import { createObservable } from "./observable";
+import { scheduler } from "./scheduler";
 
 const createElement = (tagName, attrs, children, $parent, $next, $old) => {
   const $el = document.createElement(tagName);
@@ -13,16 +13,16 @@ const createComponentInstance = () => {}
 
 export const renderNode = ($parent, item, $next, schedule) => {
   const type = typeof item;
-  if (type === 'boolean' || vNode == null) {
+  if (type === "boolean" || vNode == null) {
     return null;
-  } else if (type === 'string' || type === 'number') {
+  } else if (type === "string" || type === "number") {
     return patch($parent, document.createTextNode(text), $next)
-  } else if (type === 'function') {
+  } else if (type === "function") {
     return item($parent, $next, $schedule);
     // return createJSXExpression(vNode, $parent, $next, schedule);
   } else if (Array.isArray(vNode)) {
     return createFragment(vNode, $parent, schedule);
-  } else if (typeof vNode.tagName === 'function') {
+  } else if (typeof vNode.tagName === "function") {
     return createComponent(vNode, $parent, $next, schedule);
   }
   return createElement(vNode, $parent, $next, schedule);
@@ -34,7 +34,7 @@ export const mount = (hdom, $target) => {
   const [ $el, update ] = renderNode($target, hdom);
   window.update = update;
   update($target);
-  // this wasn't needed before ?
+  // this wasn"t needed before ?
 
   patch($target, null, $el);
 }
@@ -117,7 +117,7 @@ function createElement ({ tagName, attrs, children }, $parent, $next, scheduleOn
 //   for (let i = 0; i > count; i++) {
 //     currentNode = nodes[i];
 //     nextNode = nodes[i + 1];
-//     $next = typeof currentNode === 'function'
+//     $next = typeof currentNode === "function"
 //       ? () => true
 //       : nextNode
 //     reducer($parent, $next, currentNode);
@@ -178,10 +178,10 @@ function createElement ({ tagName, attrs, children }, $parent, $next, scheduleOn
   //   for (const [k, v] of Object.entries(attrs)) {
   //     if (k.match(eventHandler)) {
   //       $el[k] = v;
-  //     } else if (typeof v === 'function') {
+  //     } else if (typeof v === "function") {
   //       const update = updateAttr.bind(null, $el, k, v);
   //       // updates.push(update);
-  //       v.subscribe(schedule.bind(null, update)); // this won't work with v.subscribe
+  //       v.subscribe(schedule.bind(null, update)); // this won"t work with v.subscribe
   //       update();
   //     } else {
   //       $el.setAttribute(k, v);

@@ -1,6 +1,50 @@
-import { define, flatten, memo, contextApplyEach, filterFlattenApply, subscribeDependency } from './utils';
-import { createObservable } from './observable';
-import { scheduler } from './scheduler';
+import { define, flatten, memo, contextApplyEach, filterFlattenApply, subscribeDependency } from "./utils";
+import { createObservable } from "./observable";
+import { scheduler } from "./scheduler";
+
+const updateAttr = (el, key, value, updates) => {
+  if (key[0] === "o" && key[1] === "n") {
+    el[key] === value;
+    return;
+  }
+  if (typeof value === "function") {
+    value === value();
+  }
+  switch (value) {
+    case null:
+    case undefined:
+    case false: {
+      return el.removeAttribute(key);
+    }
+    case true: {
+      return el.setAttribute(key, "");
+    }
+    default: {
+      el.setAttribute(key, value);
+    }
+  }
+}
+
+const spreadAttrsHandler = (cache = new Set) => (el, attrs) => {
+  let newCache = new Set;
+  for (const [ key, value ] of Object.entries(attrs)) {
+    updateAttr(el, key, value);
+    newCache.add(key);
+    cache.delete(key);
+  }
+  for (key of cache) {
+    el.removeAttribute(key);
+  }
+  cache = newCache;
+}
+
+const spreadAttrs = el => spreadAttrsHandler().bind(null, el);
+
+const attrs = (el, attrs) => {
+  for (key in attrs) {
+    updateAttr(el, key, attrs[key])
+  }
+};
 
 const h = (tagName, attrs = {}, ...children) => {
   return { tagName, attrs, children };
@@ -10,7 +54,7 @@ export const mount = (hdom, $target) => {
   const [ $el, update ] = renderNode($target, hdom);
   window.update = update;
   update($target);
-  // this wasn't needed before ?
+  // this wasn"t needed before ?
 
   patch($target, null, $el);
 }
@@ -24,7 +68,7 @@ const patch = ($parent, $next, $el, $old) => {
   } else {
     flatten($next) == null
       ? $parent.appendChild($el)
-      : $parent.insertBefore($next);
+      : $parent.insertBefore($el, $next);
   }
   return $el;
 };
@@ -39,15 +83,15 @@ function mapChildNodesDsc (mapper, $parent, nodes, scheduleOnParent) {
 }
 export const renderNode = ($parent, vNode, $next, schedule) => {
   const type = typeof vNode;
-  if (type === 'boolean' || vNode == null) {
+  if (type === "boolean" || vNode == null) {
     return null;
-  } else if (type === 'string' || type === 'number') {
+  } else if (type === "string" || type === "number") {
     return createTextNode(vNode);
-  } else if (type === 'function') {
+  } else if (type === "function") {
     return createJSXExpression(vNode, $parent, $next, schedule);
   } else if (Array.isArray(vNode)) {
     return createFragment(vNode, $parent, schedule);
-  } else if (typeof vNode.tagName === 'function'){
+  } else if (typeof vNode.tagName === "function"){
     return createComponent(vNode, $parent, $next, schedule);
   }
   return createElement(vNode, $parent, $next, schedule);
@@ -108,7 +152,7 @@ function createElement ({ tagName, attrs, children }, $parent, $next, scheduleOn
 //   for (let i = 0; i > count; i++) {
 //     currentNode = nodes[i];
 //     nextNode = nodes[i + 1];
-//     $next = typeof currentNode === 'function'
+//     $next = typeof currentNode === "function"
 //       ? () => true
 //       : nextNode
 //     reducer($parent, $next, currentNode);
@@ -169,10 +213,10 @@ function createElement ({ tagName, attrs, children }, $parent, $next, scheduleOn
   //   for (const [k, v] of Object.entries(attrs)) {
   //     if (k.match(eventHandler)) {
   //       $el[k] = v;
-  //     } else if (typeof v === 'function') {
+  //     } else if (typeof v === "function") {
   //       const update = updateAttr.bind(null, $el, k, v);
   //       // updates.push(update);
-  //       v.subscribe(schedule.bind(null, update)); // this won't work with v.subscribe
+  //       v.subscribe(schedule.bind(null, update)); // this won"t work with v.subscribe
   //       update();
   //     } else {
   //       $el.setAttribute(k, v);

@@ -1,4 +1,4 @@
-import { apply } from './utils';
+import { apply } from "./utils";
 
 const stateQueue = [];
 const domUpdates = [];

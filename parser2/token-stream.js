@@ -4,15 +4,15 @@ const addKeyword = (kw, value) => {
   Object.defineProperty(keywords, kw, { value });
 }
 
-addKeyword('let');
-addKeyword('if');
-addKeyword('then');
-addKeyword('else');
-addKeyword('lamda');
-addKeyword('Î»');
-addKeyword('true');
-addKeyword('false');
-addKeyword('js:raw');
+addKeyword("let");
+addKeyword("if");
+addKeyword("then");
+addKeyword("else");
+addKeyword("lamda");
+addKeyword("Î»");
+addKeyword("true");
+addKeyword("false");
+addKeyword("js:raw");
 
 function is_keyword(x) {
   return keywords.hasOwnProperty(x);
@@ -120,8 +120,8 @@ module.exports = function TokenStream(input) {
       skip_comment();
       return read_next();
     }
-    if (ch === '\n') return { type: 'newline', value: input.next() }
-    if (ch === '"' || ch === "'") return read_string(ch);
+    if (ch === "\n") return { type: "newline", value: input.next() }
+    if (ch === """ || ch === """) return read_string(ch);
     if (is_digit(ch)) return read_number();
     if (is_id_start(ch)) return read_identifier();
     if (is_punctuation(ch)) return {
@@ -132,7 +132,7 @@ module.exports = function TokenStream(input) {
       type  : "op",
       value : read_while(is_operation_char)
     };
-    input.croak("Can't handle character: " + ch);
+    input.croak("Can"t handle character: " + ch);
   }
 
   function peek() {

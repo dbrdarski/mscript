@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -17,14 +17,14 @@ exports.default = function (_ref) {
       if (transformer) {
         return transformer(node);
       }
-      throw new Error(node.type + ' could not be transformed');
+      throw new Error(node.type + " could not be transformed");
     };
   };
 
   var StringOrNumericLiteral = function StringOrNumericLiteral (node) {
     switch (node.type) {
-      case 'StringLiteral':
-      case 'NumericLiteral':
+      case "StringLiteral":
+      case "NumericLiteral":
         return true;
       default:
         return false;
@@ -63,7 +63,7 @@ exports.default = function (_ref) {
 
     if (constructorModule) {
       // If the constructor function will be retrieved from a module.
-      var moduleName = path.scope.generateUidIdentifier('h');
+      var moduleName = path.scope.generateUidIdentifier("h");
       jsxObjectTransformer = jsxObjectTransformerCreator(moduleName);
 
       var importDeclaration = t.importDeclaration([t.importDefaultSpecifier(moduleName)], t.stringLiteral(constructorModule));
@@ -71,10 +71,10 @@ exports.default = function (_ref) {
       // Add the import declration to the top of the file.
       path.findParent(function (p) {
         return p.isProgram();
-      }).unshiftContainer('body', importDeclaration);
+      }).unshiftContainer("body", importDeclaration);
     // } else if (constructorFunction) {
     //   // If the constructor function will be an in scope function.
-    //   var expression = constructorFunction.split('.').map((0, _ary2.default)(t.identifier, 1)).reduce((0, _ary2.default)(t.memberExpression, 2));
+    //   var expression = constructorFunction.split(".").map((0, _ary2.default)(t.identifier, 1)).reduce((0, _ary2.default)(t.memberExpression, 2));
     //   jsxObjectTransformer = jsxObjectTransformerCreator(expression);
     // } else {
     //   // Otherwise, we won‘t be mapping.
@@ -92,11 +92,11 @@ exports.default = function (_ref) {
    * ======================================================================= */
 
   var visitJSXElement = function visitJSXElement(path, state) {
-    if (!state.get('jsxConfig')) {
-      state.set('jsxConfig', initConfig(path, state));
+    if (!state.get("jsxConfig")) {
+      state.set("jsxConfig", initConfig(path, state));
     }
 
-    var _state$get = state.get('jsxConfig');
+    var _state$get = state.get("jsxConfig");
 
     var variablesRegex = _state$get.variablesRegex;
     var jsxObjectTransformer = _state$get.jsxObjectTransformer;
@@ -110,7 +110,7 @@ exports.default = function (_ref) {
     };
 
     var JSXNamespacedName = function JSXNamespacedName(node) {
-      return t.stringLiteral(node.namespace.name + ':' + node.name.name);
+      return t.stringLiteral(node.namespace.name + ":" + node.name.name);
     };
 
     var _JSXMemberExpression = transformOnType({
@@ -149,7 +149,7 @@ exports.default = function (_ref) {
 
       nodes.forEach(function (node) {
         switch (node.type) {
-          case 'JSXAttribute':
+          case "JSXAttribute":
             {
               if (!object) {
                 object = [];
@@ -161,7 +161,7 @@ exports.default = function (_ref) {
               object.push(t.objectProperty(objectKey, JSXAttributeValue(node.value)));
               break;
             }
-          case 'JSXSpreadAttribute':
+          case "JSXSpreadAttribute":
             {
               if (object) {
                 objects.push(t.objectExpression(object));
@@ -172,7 +172,7 @@ exports.default = function (_ref) {
               break;
             }
           default:
-            throw new Error(node.type + ' cannot be used as a JSX attribute');
+            throw new Error(node.type + " cannot be used as a JSX attribute");
         }
       });
 
@@ -186,18 +186,18 @@ exports.default = function (_ref) {
         return objects[0];
       }
 
-      return t.callExpression(t.Identifier('_extends'), objects);
+      return t.callExpression(t.Identifier("_extends"), objects);
     };
 
     var JSXText = function JSXText(node) {
       if (state.opts.noTrim) return t.stringLiteral(node.value);
-      var value = node.value.replace(/\n\s*/g, '');
-      return value === '' ? null : t.stringLiteral(value);
+      var value = node.value.replace(/\n\s*/g, "");
+      return value === "" ? null : t.stringLiteral(value);
     };
 
     var JSXElement = function JSXElement(node) {
       const tagName = JSXElementName(node.openingElement.name)
-      return t.callExpression(t.identifier(tagName.type === 'Identifier' ? 'component' : 'element'), [
+      return t.callExpression(t.identifier(tagName.type === "Identifier" ? "component" : "element"), [
         tagName,
         JSXAttributes(node.openingElement.attributes),
         ...JSXChildren(node.children)
@@ -208,8 +208,8 @@ exports.default = function (_ref) {
     var JSXFragment = function JSXFragment (node) {
       return t.callExpression(
        t.memberExpression(
-         t.identifier('M'),
-         t.identifier('fragment'),
+         t.identifier("M"),
+         t.identifier("fragment"),
          false
        ),
        JSXChildren(node.children)
@@ -227,7 +227,7 @@ exports.default = function (_ref) {
       return nodes.map(JSXChild).filter(Boolean)
       // Normalize all of our string children into one big string. This can be
       // an optimization as we minimize the number of nodes created.
-      // This step just turns `['1', '2']` into `['12']`.
+      // This step just turns `["1", "2"]` into `["12"]`.
       .reduce(function (children, child) {
         var lastChild = children.length > 0 ? children[children.length - 1] : null;
 
@@ -243,7 +243,7 @@ exports.default = function (_ref) {
 
     // Actually replace JSX with an object.
     path.replaceWith(
-      path.node.type === 'JSXFragment'
+      path.node.type === "JSXFragment"
         ? JSXFragment(path.node)
         : JSXElement(path.node)
       );
@@ -254,7 +254,7 @@ exports.default = function (_ref) {
    * ======================================================================= */
 
   return {
-    inherits: require('babel-plugin-syntax-jsx'),
+    inherits: require("babel-plugin-syntax-jsx"),
     visitor: {
       // Program: (path, scope) => console.log(path, scope),
       JSXElement: visitJSXElement,
@@ -263,19 +263,19 @@ exports.default = function (_ref) {
   };
 };
 
-// var _isString = require('lodash/isString');
+// var _isString = require("lodash/isString");
 //
 // var _isString2 = _interopRequireDefault(_isString);
 
-// var _identity = require('lodash/identity');
+// var _identity = require("lodash/identity");
 //
 // var _identity2 = _interopRequireDefault(_identity);
 
-// var _ary = require('lodash/ary');
+// var _ary = require("lodash/ary");
 //
 // var _ary2 = _interopRequireDefault(_ary);
 
-var _esutils = require('esutils');
+var _esutils = require("esutils");
 
 var _esutils2 = _interopRequireDefault(_esutils);
 

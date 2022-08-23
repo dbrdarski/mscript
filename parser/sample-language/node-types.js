@@ -1,18 +1,18 @@
-import { addNodeType } from '../parser';
+import { addNodeType } from "../parser";
 
-export const Program = 'Program';
-export const Statement = 'Statement';
-export const Expression = 'Expression';
-export const Identifier = 'Identifier';
-export const Literal = 'Literal';
-export const StringLiteral = 'StringLiteral';
-export const NumericLiteral = 'NumericLiteral';
-export const DeclarationStatement = 'DeclarationStatement';
-export const AssignmentExpression = 'AssignmentExpression';
-export const BinaryExpression = 'BinaryExpression';
-export const MatchExpression = 'MatchExpression';
-export const BooleanLiteral = 'BooleanLiteral';
-export const NullLiteral = 'NullLiteral';
+export const Program = "Program";
+export const Statement = "Statement";
+export const Expression = "Expression";
+export const Identifier = "Identifier";
+export const Literal = "Literal";
+export const StringLiteral = "StringLiteral";
+export const NumericLiteral = "NumericLiteral";
+export const DeclarationStatement = "DeclarationStatement";
+export const AssignmentExpression = "AssignmentExpression";
+export const BinaryExpression = "BinaryExpression";
+export const MatchExpression = "MatchExpression";
+export const BooleanLiteral = "BooleanLiteral";
+export const NullLiteral = "NullLiteral";
 
 addNodeType({
   name: Program,
@@ -28,7 +28,7 @@ addNodeType({
   aliases: null,
   has: {
     expression: [ Expression ],
-    _delimiter: [ ';' ]
+    _delimiter: [ ";" ]
   }
   // hasMany: [ Statement ]
 })

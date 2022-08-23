@@ -1,10 +1,10 @@
-import { NODE_MATCH } from './definitions'
+import { NODE_MATCH } from "./definitions"
 
 function matchNode ({ start, end, item, prevMatch, node }, char) {
-  console.log('MATCHING', { char, start, end, item, node })
+  console.log("MATCHING", { char, start, end, item, node })
   const match = node.match(char);
   if (!match) {
-    console.log('FAIL', { char, match, node });
+    console.log("FAIL", { char, match, node });
     if (prevMatch) {
       this.add({ ...prevMatch });
       console.log(prevMatch);
@@ -41,11 +41,11 @@ function matchNode ({ start, end, item, prevMatch, node }, char) {
     if (match.hasOwnProperty(NODE_MATCH)) {
       const type = match[NODE_MATCH];
       if (type.continue) {
-        console.log('CONTINUE', item)
+        console.log("CONTINUE", item)
         prevMatch = { start, end, item, prevMatch, node: match, type };
         node = match;
       } else {
-        console.log('FINISH', item)
+        console.log("FINISH", item)
         prevMatch = { start, end, item, prevMatch: null, node: match, type };
         this.add(prevMatch);
         start = end;
@@ -70,7 +70,7 @@ function matchNode ({ start, end, item, prevMatch, node }, char) {
     //   };
     //
     //   if (!type.continue) {
-    //     console.log('!!!!!!!!!!!!!!!!!', { start, end })
+    //     console.log("!!!!!!!!!!!!!!!!!", { start, end })
     //     this.add({
     //       ...prevMatch,
     //       node: match

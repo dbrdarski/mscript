@@ -1,5 +1,5 @@
-import { apply } from './utils';
-import Queue from './queue';
+import { apply } from "./utils";
+import Queue from "./queue";
 
 const evaluateFn = ([ fn, ...args ]) => fn(...args);
 
@@ -24,11 +24,29 @@ const dispatch = () => {
   dispatcherIsRunning = false;
 };
 
-export const effect = (fn) => (...args) => {
+export const effect = (fn) => function (...args) {
+  // queueMicrotask(fn.bind(null, arguments))
   dispatcherQueue.push([fn, ...args]);
   dispatcherIsRunning || dispatch();
 }
 
 export const updateDOM = (updateFn) => {
   domUpdates.push(updateFn);
+}
+
+tco = fn => {
+  let result;
+  let nextCall;
+  const next = fn => nextCall = fn;
+  const eval = {
+    result = nextCall();
+    nextCall = null;
+  }
+  return function () {
+    fn.bind(this, next, ...arguments);
+  }
+}
+
+tc = () => {
+
 }

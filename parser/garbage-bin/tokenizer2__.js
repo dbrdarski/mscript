@@ -1,7 +1,7 @@
-import { NODE_MATCH } from './definitions';
-import { getOrSetDefault } from './utils';
+import { NODE_MATCH } from "./definitions";
+import { getOrSetDefault } from "./utils";
 
-// import { consumeSource } from './consumer';
+// import { consumeSource } from "./consumer";
 
 class TokenNode {
   match (char) {
@@ -34,7 +34,7 @@ export const tokenize = (source) => {
   const { length } = source;
   let start = 0,
       end = 0,
-      token = '',
+      token = "",
       prevMatch = null,
       node = tokensRootNode;
   while (end < length) {
@@ -61,17 +61,17 @@ export const tokenize = (source) => {
           start,
           end,
           token: char,
-          type: /\d/.test(char) ? 'numeric' : 'char',
+          type: /\d/.test(char) ? "numeric" : "char",
         })
         start = end;
-        token = '';
+        token = "";
         continue;
       }
       tokens.push(prevMatch);
       start = prevMatch.end
       end = prevMatch.end;
       prevMatch = null;
-      token = '';
+      token = "";
     }
   }
   prevMatch && tokens.push(prevMatch);

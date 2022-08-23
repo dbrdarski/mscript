@@ -1,6 +1,6 @@
-import { tokenizer } from './tokenizer';
+import { tokenizer } from "./tokenizer";
 
-export { createTokenType, createTokenizerContext, getTokenizerContext } from './tokenizer';
+export { createTokenType, createTokenizerContext, getTokenizerContext } from "./tokenizer";
 
 const astNodeTypes = [];
 export const astNodeTypeIndex = {};
@@ -81,7 +81,7 @@ export const parser = ({ tokenizerOptions, defaultAST }) => (code) => {
         throw Error (token);
       }
     } else {
-      const right = token.node_type.r
+      const right = token.node_type.r;
       if (right) {
         const rightNode = processToken(read());
         const assR = assertType(right, rightNode);
@@ -134,7 +134,7 @@ export const parser = ({ tokenizerOptions, defaultAST }) => (code) => {
   });
 
   console.log({ tree })
-  // processToken('(EOF)');
+  // processToken("(EOF)");
 }
 
 // return collect(read)
@@ -146,4 +146,4 @@ export const parser = ({ tokenizerOptions, defaultAST }) => (code) => {
 //     }
 //   });
 
-// console.log('TOKENS', );
+// console.log("TOKENS", );

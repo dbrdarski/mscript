@@ -4,12 +4,12 @@
  * - Accepts a subject string and an object of regular expressions for parsing
  * - Returns an array of token objects
  *
- * tokenize('this is text.', { word:/\w+/, whitespace:/\s+/, punctuation:/[^\w\s]/ }, 'invalid');
+ * tokenize("this is text.", { word:/\w+/, whitespace:/\s+/, punctuation:/[^\w\s]/ }, "invalid");
  * result => [{ token="this", type="word" },{ token=" ", type="whitespace" }, Object { token="is", type="word" }, ... ]
  *
  */
 
-export const tokenizer = ({ defaultParser, defaultToken = 'unmatched', onMismatch }) => {
+export const tokenizer = ({ defaultParser, defaultToken = "unmatched", onMismatch }) => {
 const parsersStack = [];
   const tc = initializeParsers(defaultParser);
   return (s) => {

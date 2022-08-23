@@ -1,4 +1,4 @@
-module.exports = class Queue {
+class LinkedListQueue {
   constructor () {
     this.current = null;
     this.last = null;
@@ -28,3 +28,25 @@ module.exports = class Queue {
     this.last = null;
   }
 }
+
+class ArrayBasedQueue {
+  constructor () {
+    this.list = [];
+    this.currentIndex = 0;
+  }
+  push (...items) {
+    this.list.push(...items);
+  }
+  next () {
+    return this.list[this.currentIndex++];
+  }
+  run (handler) {
+    while (this.currentIndex < this.list.length) {
+      handler(this.next());
+    }
+    this.list.length = 0
+    this.currentIndex = 0;
+  }
+}
+
+module.exports = LinkedListQueue

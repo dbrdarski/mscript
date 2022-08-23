@@ -1,8 +1,8 @@
-export const flatten = (v) => typeof v === 'function' ? v() : v;
-// const maybeFlattenApply = (v, fn) => v === 'function' ? fn(v) : v;
+export const flatten = (v) => typeof v === "function" ? v() : v;
+// const maybeFlattenApply = (v, fn) => v === "function" ? fn(v) : v;
 
 // filterFlattenApply ==  filters out non-function arguments, applies function arguments to a another function (used to subscribe to reactive getters)
-export const filterFlattenApply = (args, fn) => args.reduce((acc, arg) => (typeof arg === 'function' && acc.push(fn(arg)), acc), []);
+export const filterFlattenApply = (args, fn) => args.reduce((acc, arg) => (typeof arg === "function" && acc.push(fn(arg)), acc), []);
 
 // const computed = (fn) => Object.defineProperties(fn, {});
 

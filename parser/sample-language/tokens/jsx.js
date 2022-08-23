@@ -1,6 +1,6 @@
 export const jsx_fragment_opening = createTokenType({
   name: 'jsx_fragment',
-  pattern: /<>/,
+  pattern: /<>/, //TODO: write pattern
   handler: (token, { parsers }) => {
     parsers.push(JSXElement);
     return {
@@ -12,7 +12,7 @@ export const jsx_fragment_opening = createTokenType({
 
 export const jsx_fragment_closing = createTokenType({
   name: 'jsx_fragment',
-  pattern: /</>/,
+  pattern: /</>/, //TODO: write pattern
   handler: (token, { parsers }) => {
     parsers.pop();
     return {

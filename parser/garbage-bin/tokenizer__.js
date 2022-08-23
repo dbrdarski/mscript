@@ -1,7 +1,7 @@
-// import { NODE_MATCH } from './definitions';
-// import { getOrSetDefault } from './utils';
+// import { NODE_MATCH } from "./definitions";
+// import { getOrSetDefault } from "./utils";
 
-// import { consumeSource } from './consumer';
+// import { consumeSource } from "./consumer";
 
 const keyword_initial_char = /[a-zA-Z_$@]/;
 const keyword = /^[a-zA-Z_$@][0-9a-zA-Z_$@]*$/;
@@ -28,29 +28,29 @@ const registerTokenType = (name, definition) => {
   });
 };
 
-const registerTokenType ('number', ({ read_while, token_definition }) => {
+const registerTokenType ("number", ({ read_while, token_definition }) => {
   const matchStart = (char) => number.test(char);
   return {
     matchStart,
     consume: read_while.bind(null, matchStart),
     resolve: (token) => token_definition({
-      type: 'number',
+      type: "number",
       value: token,
     })
    }
 });
 
-const registerTokenType ('string', ({ read_while, token_definition }) => {
+const registerTokenType ("string", ({ read_while, token_definition }) => {
   const matchStart = (char) => number.test(char);
   return {
-    matchStart: (char) => char === '"' || char === '\'',
+    matchStart: (char) => char === """ || char === "\"",
     consume: (token, char) => {
       const quote = token[0];
       let escaped = false;
 
       read_while((token, char) => {
         if (!escaped) {
-          if (char === '\\') {
+          if (char === "\\") {
             escaped = true;
           }
           return char !== quote;
@@ -60,21 +60,21 @@ const registerTokenType ('string', ({ read_while, token_definition }) => {
       })
     }),
     resolve: (token) => token_definition({
-      type: 'string',
+      type: "string",
       value: token,
     })
    }
 });
 
-const registerTokenType ('word', ({ read_while }) => {
+const registerTokenType ("word", ({ read_while }) => {
   const matchStart: (char) => keyword_initial_char.test(char);
   const consume = read_while.bind(null, (token) => keyword.test(token));
   const resolve = (token) => token_definition(keywords.find(token);
   ? {
-    type: 'keyword',
+    type: "keyword",
     value: token
   } : {
-    type: 'identifier',
+    type: "identifier",
     value: token,
     operator: false
   });
@@ -90,7 +90,7 @@ const matchTokenType = (input) => {
   const char = input.peek(char);
   tokenType.find(type => type.matchStart(char));
   if (tokenType) tokenType.consume(input);
-  else throw Error ('Umatched character: ' + char);
+  else throw Error ("Umatched character: " + char);
 };
 
 class TokenNode {
@@ -124,7 +124,7 @@ export const tokenize = (source) => {
   const { length } = source;
   let start = 0,
       end = 0,
-      token = '',
+      token = "",
       prevMatch = null,
       node = tokensRootNode;
   while (end < length) {
@@ -151,17 +151,17 @@ export const tokenize = (source) => {
           start,
           end,
           token: char,
-          type: /\d/.test(char) ? 'numeric' : 'char',
+          type: /\d/.test(char) ? "numeric" : "char",
         })
         start = end;
-        token = '';
+        token = "";
         continue;
       }
       tokens.push(prevMatch);
       start = prevMatch.end
       end = prevMatch.end;
       prevMatch = null;
-      token = '';
+      token = "";
     }
   }
   prevMatch && tokens.push(prevMatch);

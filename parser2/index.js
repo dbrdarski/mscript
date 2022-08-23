@@ -1,12 +1,12 @@
-const parse = require('./parser');
-const InputStream = require('./input-stream');
-const TokenStream = require('./token-stream');
-const make_js = require('./generator');
+const parse = require("./parser");
+const InputStream = require("./input-stream");
+const TokenStream = require("./token-stream");
+const make_js = require("./generator");
 
 const generateAST = code => parse(TokenStream(InputStream(code)));
 const code = `
   asdf = 3
-  dfgh = 'hello'
+  dfgh = "hello"
   3 + 4`;
 
 console.log(generateAST(code));
@@ -288,7 +288,7 @@ module.exports = {
 //           case "call"   : return opt_call   (exp);
 //           case "lambda" : return opt_lambda (exp);
 //         }
-//         throw new Error("I don't know how to optimize " + JSON.stringify(exp));
+//         throw new Error("I don"t know how to optimize " + JSON.stringify(exp));
 //     }
 //
 //     function changed() {
@@ -491,8 +491,8 @@ module.exports = {
 //
 //     function opt_call(exp) {
 //         // IIFE-s will be optimized away by defining variables in the
-//         // containing function.  However, we don't unwrap into the
-//         // global scope (that's why checking for env.parent.parent).
+//         // containing function.  However, we don"t unwrap into the
+//         // global scope (that"s why checking for env.parent.parent).
 //         var func = exp.func;
 //         if (func.type == "lambda" && !func.name) {
 //             if (func.env.parent.parent)
@@ -645,7 +645,7 @@ module.exports = {
 //             break;
 //
 //           default:
-//             throw new Error("Can't handle node " + JSON.stringify(exp));
+//             throw new Error("Can"t handle node " + JSON.stringify(exp));
 //         }
 //     })(exp, global);
 //     return exp.env;
@@ -745,7 +745,7 @@ module.exports = {
 //             }
 //         }
 //
-//         jsc = '"use strict";\n\n' + jsc;
+//         jsc = ""use strict";\n\n" + jsc;
 //
 //         try {
 //             sys.error(u2.parse(jsc).print_to_string({

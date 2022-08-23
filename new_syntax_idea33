@@ -1,4 +1,4 @@
-import DynamicWizard from 'DynamicWizard'
+import DynamicWizard from "DynamicWizard"
 
 template: ({ prettyValue, click }) => (
   <div>
@@ -10,7 +10,7 @@ template: ({ prettyValue, click }) => (
 setup: (props) => {
   counter: state(0)
   showCounter: state(true)
-  prettyValue: showCounter ? `${counter} ${m(asd)} times clicked ` : 'Hello world'
+  prettyValue: showCounter ? `${counter} ${m(asd)} times clicked ` : "Hello world"
 
   click: effect(e => {
     console.log(e)
@@ -27,7 +27,7 @@ setup: (props) => {
 
 // 000000000000000
 
-// import * as Pero from './pero'
+// import * as Pero from "./pero"
 //
 // stateA: state | (Array, Number);
 // propB: attr | [Array, Number];
@@ -60,7 +60,7 @@ setup: (props) => {
 // ===================================
 //
 //
-// import * as Pero from './pero'
+// import * as Pero from "./pero"
 //
 // props: {
 //  showSomething = true | [Boolean, String]
